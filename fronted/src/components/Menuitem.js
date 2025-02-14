@@ -14,9 +14,8 @@ export const Menuitem = () => {
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const dispatch = useDispatch();
   const cartItems = useSelector((store) => store.cart.items);
-  const backendurl = `${process.env.REACT_APP_BACKEND_API_URL}/menuitem`;
-  console.log("shiwansh", backendurl);
-  
+  const backendurl = process.env.REACT_APP_BACKEND_API_URL;
+
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_BACKEND_API_URL}/menuitem`)
