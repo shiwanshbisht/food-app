@@ -18,7 +18,7 @@ export const Menuitem = () => {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_BACKEND_API_URL}/menuitem`)
+      .get(`${backendurl}/menuitem`)
       .then((response) => {
         setFoodItems(response.data);
       })
