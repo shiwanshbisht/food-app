@@ -24,7 +24,7 @@ app.use((req, res, next) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
     "http://localhost:3000",
-    "https://manish-gwap.vercel.app/"
+    // "vercel app link"
   );
   res.header(
     "Access-Control-Allow-Headers",

@@ -62,7 +62,7 @@ export const Footer = () => {
                 className="text-lg mb-4 no-underline"
               >
                 {" "}
-                Manish Kumar{" "}
+                Shiwansh{" "}
               </span>
             </a>
           </p>
