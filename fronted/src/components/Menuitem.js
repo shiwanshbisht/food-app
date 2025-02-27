@@ -6,9 +6,9 @@ import { IoSearch } from "react-icons/io5";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MenuList } from "./MenuList";
+import menuItemAction from "../redux/menuItems/menuItemAction";
 
 export const Menuitem = () => {
-  const [foodItems, setFoodItems] = useState([]);
   const [search, setSearch] = useState("");
   const [showVegOnly, setShowVegOnly] = useState(false);
   const [debouncedSearch, setDebouncedSearch] = useState(search);
@@ -16,17 +16,10 @@ export const Menuitem = () => {
   const cartItems = useSelector((store) => store.cart.items);
   const backendurl = process.env.REACT_APP_BACKEND_API_URL;
 
-  useEffect(() => {
-    axios
-      .get(`${backendurl}/menuitem`)
-      .then((response) => {
-        setFoodItems(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching food items:", error);
-      });
-  }, []);
+  dispatch(menuItemAction());
+  const foodItems=useSelector((store)=> store.menuItems.data);
 
+  
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
