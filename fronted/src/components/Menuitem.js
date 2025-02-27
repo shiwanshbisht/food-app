@@ -6,7 +6,7 @@ import { IoSearch } from "react-icons/io5";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MenuList } from "./MenuList";
-import menuItemAction from "../redux/menuItems/menuItemAction";
+import menuItemAction from "../utils/menuItems/menuItemAction"
 
 export const Menuitem = () => {
   const [search, setSearch] = useState("");
