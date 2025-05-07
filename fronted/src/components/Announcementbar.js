@@ -26,7 +26,7 @@ const AnnouncementBar = () => {
   const currentNumber = numbers[currentIndex];
 
   return (
-    <div className="bg-red-500 text-white flex justify-center items-center py-2 px-4">
+    <div className="bg-red-500 text-white flex justify-center items-center py-3 px-4">
       <div className="relative w-full max-w-screen-sm overflow-hidden">
         <div
           className={`flex justify-center items-center text-lg font-bold whitespace-nowrap transition-transform duration-500 ease-in-out ${
