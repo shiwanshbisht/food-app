@@ -14,7 +14,7 @@ const menuSchema = new mongoose.Schema({
     required: true,
   },
   veg: {
-    type: String,
+    type: Boolean,
   },
   bestsellers: {
     type: String,

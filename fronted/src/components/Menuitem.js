@@ -37,7 +37,7 @@ export const Menuitem = () => {
   const handleCheckboxChange = (event) => {
     setShowVegOnly(event.target.checked);
   };
-
+  
   const filteredItems = showVegOnly
     ? foodItems.filter((item) => item.veg)
     : foodItems;

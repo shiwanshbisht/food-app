@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-// import mongodbURL from "./db.js";
 import Signup from "./Routes/Signup.js";
 import Menuitem from "./Routes/Menuitem.js";
 import Item from "./Routes/Item.js";
@@ -50,7 +49,7 @@ app.use("/", Review);
 app.use("/", Instagram);
 app.use("/", Issue);
 
-const port = 4001;
+const port = 4000;
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
   mongoose

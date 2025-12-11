@@ -4,7 +4,7 @@ const backendurl = process.env.REACT_APP_BACKEND_API_URL;
 const menuItemAction = () => {
   return async (dispatch) => {
     try {
-      const response = await axios.get(`http://localhost:4001/menuitem`);
+      const response = await axios.get(`http://localhost:4000/menuitem`);
       dispatch({
         type: 'MENUITEMS',
         payload: response.data,
