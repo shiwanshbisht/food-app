@@ -32,7 +32,7 @@ const Menu = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:4000/menuitem")
+      .get("https://food-app-kxjf.onrender.com/menuitem")
       .then((response) => {
         setMenu(response.data);
       })
