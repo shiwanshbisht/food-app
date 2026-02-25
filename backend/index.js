@@ -1,3 +1,4 @@
+import "./polyfill.js";
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -16,21 +17,22 @@ import Issue from "./Routes/Issue.js";
 import "dotenv/config";
 
 const app = express();
-app.use(cors());
+
+// --- UPDATED CORS CONFIGURATION ---
+app.use(cors({
+  origin: [
+    "http://localhost:3000", // For your local development
+    "https://food-app-ochre-pi.vercel.app" // For your Vercel deployment (NO trailing slash!)
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  credentials: true
+}));
+
 app.use(express.json());
 const mongodbURL = process.env.MONGODBURL;
-app.use((req, res, next) => {
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "http://localhost:3000",
-    // "vercel app link"
-  );
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+
+// NOTE: I completely removed your custom app.use((req, res, next) => {...}) block 
+// because the cors() package above handles all of those headers automatically and safely!
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -49,11 +51,12 @@ app.use("/", Review);
 app.use("/", Instagram);
 app.use("/", Issue);
 
-const port = 4000;
+const port = process.env.PORT || 4000; // Better practice for deployment
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
   mongoose
-    .connect(mongodbURL, { useNewUrlParser: true, useUnifiedTopology: true ,connectTimeoutMS: 20000,})
+    .connect(mongodbURL, { useNewUrlParser: true, useUnifiedTopology: true, connectTimeoutMS: 20000 })
     .then(() => {
       console.log("Connected to database successfully");
     })
