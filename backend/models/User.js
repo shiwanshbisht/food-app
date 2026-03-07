@@ -8,25 +8,25 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique : true,
-        
-    },
-    password :{
-        type : String,
-        required : true,
-        minLength : [5 , 'Min Length']
-    
-    },
-    role :{
-        type : String,
-        default : "customer",
-        enum : ["customer","admin","chef","waiter"]
+        unique: true,
 
-    }  
+    },
+    password: {
+        type: String,
+        required: true,
+        minLength: [5, 'Min Length']
+
+    },
+    role: {
+        type: String,
+        default: "customer",
+        enum: ["customer", "admin"]
+
+    }
 },
-{
-    timestamps : true
-});
+    {
+        timestamps: true
+    });
 const User = mongoose.model('User', userSchema);
 
 export default User;
