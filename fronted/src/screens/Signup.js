@@ -72,7 +72,7 @@ const Signup = () => {
             <div>
               <label
                 htmlFor="name"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                className="block mb-2 text-sm font-medium text-black dark:text-white"
               >
                 Your Name
               </label>
@@ -89,7 +89,7 @@ const Signup = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                className="block mb-2 text-sm font-medium text-black dark:text-white"
               >
                 Your Email
               </label>
@@ -106,7 +106,7 @@ const Signup = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                className="block mb-2 text-sm font-medium text-black dark:text-white"
               >
                 Password
               </label>
@@ -122,35 +122,37 @@ const Signup = () => {
             </div>
 
             {/* Role Selection */}
-            <div className="flex items-center space-x-6">
-              <span className="text-sm font-medium text-gray-900 dark:text-white">Account Type:</span>
-              <div className="flex items-center">
-                <input
-                  id="role-user"
-                  type="radio"
-                  name="role"
-                  value="customer"
-                  checked={user.role === "customer"}
-                  onChange={handleChange}
-                  className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <label htmlFor="role-user" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                  User
-                </label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  id="role-admin"
-                  type="radio"
-                  name="role"
-                  value="admin"
-                  checked={user.role === "admin"}
-                  onChange={handleChange}
-                  className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <label htmlFor="role-admin" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                  Admin
-                </label>
+            <div className="flex flex-col space-y-2">
+              <span className="text-sm font-medium text-black dark:text-white">Account Type:</span>
+              <div className="flex items-center space-x-6 mt-1">
+                <div className="flex items-center">
+                  <input
+                    id="role-user"
+                    type="radio"
+                    name="role"
+                    value="customer"
+                    checked={user.role === "customer"}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label htmlFor="role-user" className="ml-2 text-sm font-medium text-black dark:text-white">
+                    User
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    id="role-admin"
+                    type="radio"
+                    name="role"
+                    value="admin"
+                    checked={user.role === "admin"}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label htmlFor="role-admin" className="ml-2 text-sm font-medium text-black dark:text-white">
+                    Admin
+                  </label>
+                </div>
               </div>
             </div>
             <div className="flex items-start mb-6">

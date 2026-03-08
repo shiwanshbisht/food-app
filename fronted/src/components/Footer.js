@@ -51,7 +51,7 @@ export const Footer = () => {
         <div className="text-sm sm:text-base text-center">
           <p>
             Made With ❤ by
-            <a href="https://www.instagram.com/mannu_story07">
+            <a href="https://www.instagram.com/shiwansh_bisht/">
               <span
                 style={{
                   fontFamily: "'Shadows Into Light', cursive",

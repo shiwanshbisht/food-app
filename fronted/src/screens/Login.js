@@ -68,7 +68,7 @@ const Login = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2"
+                className="block text-sm font-medium text-black dark:text-white mb-2"
               >
                 Your Email
               </label>
@@ -85,7 +85,7 @@ const Login = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2"
+                className="block text-sm font-medium text-black dark:text-white mb-2"
               >
                 Password
               </label>
@@ -108,7 +108,7 @@ const Login = () => {
               />
               <label
                 htmlFor="terms"
-                className="ml-3 text-sm text-gray-600 dark:text-gray-400"
+                className="ml-3 text-sm text-black dark:text-white"
               >
                 I accept the{" "}
                 <a
@@ -125,7 +125,7 @@ const Login = () => {
             >
               Log in
             </button>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
+            <p className="text-sm text-black dark:text-white mt-4">
               Don't have an account?{" "}
               <Link
                 to="/signup"
