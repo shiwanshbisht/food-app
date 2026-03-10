@@ -8,6 +8,8 @@ import { jwtDecode } from "jwt-decode";
 const Login = () => {
   const backendurl = process.env.REACT_APP_BACKEND_API_URL;
   let navigate = useNavigate();
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [error, setError] = useState(null);
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -22,6 +24,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null); // Clear previous errors
     try {
       const response = await axios.post(
         `${backendurl}/login`,
@@ -39,20 +42,34 @@ const Login = () => {
       const result = response.data;
 
       if (result.success) {
+        setIsLoggingIn(true);
         const token = result.token;
         Cookies.set("jwt", token);
 
-        const decoded = jwtDecode(token);
-        console.log("Decoded token:", decoded);
+        setTimeout(() => {
+          const decoded = jwtDecode(token);
+          console.log("Decoded token:", decoded);
 
-        if (decoded.role === "admin") {
-          navigate("/order");
-        } else {
-          navigate("/");
-        }
+          if (decoded.role === "admin") {
+            navigate("/order");
+          } else {
+            navigate("/");
+          }
+        }, 800);
       }
-    } catch (error) {
-      console.error("Error logging in:", error);
+    } catch (err) {
+      console.error("Error logging in:", err);
+      if (err.response && err.response.data) {
+        if (err.response.data.error) {
+          setError(err.response.data.error); // "Incorrect password", "Email is not valid"
+        } else if (err.response.data.errors) {
+          setError(err.response.data.errors[0].msg); // Validation array errors
+        } else {
+          setError("Failed to login. Please try again.");
+        }
+      } else {
+        setError("Network error. Please check your connection.");
+      }
     }
   };
 
@@ -119,6 +136,11 @@ const Login = () => {
                 </a>
               </label>
             </div>
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md text-sm">
+                {error}
+              </div>
+            )}
             <button
               type="submit"
               className="w-full text-white text-lg-Bold bg-black hover:bg-primary-600 focus:ring-primary-500 focus:outline-none font-medium rounded-lg text-sm px-4 py-3 transition-colors duration-300"
@@ -137,6 +159,19 @@ const Login = () => {
           </form>
         </div>
       </div>
+
+      {/* Full-Screen Login Loading Overlay */}
+      {isLoggingIn && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white dark:bg-gray-900 bg-opacity-50 dark:bg-opacity-50 transition-opacity">
+          <div className="flex flex-col items-center justify-center bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700">
+            <svg className="animate-spin h-12 w-12 text-black dark:text-white mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p className="text-xl font-semibold text-black dark:text-white">Logging in...</p>
+          </div>
+        </div>
+      )}
     </>
   );
 };

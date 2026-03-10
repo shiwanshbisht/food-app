@@ -16,7 +16,11 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./uploads");
+    const dir = "./uploads";
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
@@ -46,12 +50,13 @@ router.post("/menuitem", upload.single("files"), async (req, res) => {
 
     res.status(201).json(savedItem);
 
-    // fs.unlink(req.file.path, function (err) {
-    //   if (err) console.log(err);
-    //   else {
-    //     console.log("\nDeleted file:", req.file.path);
-    //   }
-    // });
+    fs.unlink(req.file.path, function (err) {
+      if (err) console.log(err);
+      else {
+        console.log("\nDeleted file:", req.file.path);
+      }
+    });
+
   } catch (err) {
     res.status(400).json({ message: err.message });
 

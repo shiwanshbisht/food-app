@@ -24,7 +24,7 @@ export const Footer = () => {
               <span className="sr-only">Facebook</span>
             </a>
             <a
-              href="https://www.instagram.com/_the_nightmanager_"
+              href="https://www.instagram.com/shiwansh_bisht/"
               className="text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 mx-2 w-8 h-8 sm:w-10 sm:h-10"
             >
               <img

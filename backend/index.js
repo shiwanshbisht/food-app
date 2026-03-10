@@ -12,7 +12,6 @@ import Order from "./Routes/Order.js";
 import Payment from "./Routes/Payment.js";
 import Pics from "./Routes/Testimonials.js";
 import Review from "./Routes/Review.js";
-import Instagram from "./Routes/Instagram.js";
 import Issue from "./Routes/Issue.js";
 import "dotenv/config";
 
@@ -48,7 +47,6 @@ app.use("/", Order);
 app.use("/", Payment);
 app.use("/", Pics);
 app.use("/", Review);
-app.use("/", Instagram);
 app.use("/", Issue);
 
 const port = process.env.PORT || 4000; // Better practice for deployment
