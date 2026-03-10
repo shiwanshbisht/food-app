@@ -42,15 +42,18 @@ export const Menumanage = () => {
 
     const formData = new FormData();
     formData.append("files", file);
+    formData.append("name", menu.name);
+    formData.append("price", menu.price);
+    formData.append("description", menu.description);
+    formData.append("veg", menu.veg === "veg" ? true : false); // Convert to boolean for database
+    formData.append("bestsellers", menu.bestsellers);
+    formData.append("qunatity", 1); // Backend expects qunatity
 
     try {
-      const response = await axios.post(`${backendurl}/menuitem`, menu, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      // Axios automatically sets "Content-Type" with the proper boundary when using FormData
+      const response = await axios.post(`${backendurl}/menuitem`, formData);
 
-      console.log("menu updated", menu);
+      console.log("menu updated", response.data);
       if (response) {
         navigate("/");
       }
