@@ -10,17 +10,11 @@ import Login from "./screens/Login";
 import Admin from "./Admin/Admin";
 import Adminorders from "./Admin/Adminorders";
 import Privateroutes from "./Privateroutes";
-import Expense from "./Admin/Expense";
-import { useContext, useNavigate, useEffect, useState } from "react";
-import UserContext from "./utils/UserContext";
 import { Provider } from "react-redux";
 import appStore from "./utils/store";
 import { Menumanage } from "./Admin/Menumanage";
-import { Addmember } from "./Admin/Addmember";
 import Menu from "./Admin/Menu";
-import Cookies from "js-cookie";
 import Picsupload from "./components/Picsupload";
-import Issue from "./Admin/Issue";
 import Userinfo from "./components/UserInfo";
 
 function App() {
@@ -43,10 +37,7 @@ function App() {
                 <Route path="/admin/user" element={<Admin />} />
                 <Route path="/menu" element={<Menu />} />
                 <Route path="/order" element={<Adminorders />} />
-                <Route path="/expense" element={<Expense />} />
-                <Route path="/addmember" element={<Addmember />} />
                 <Route path="/addmenu" element={<Menumanage />} />
-                <Route path="/issue" element={<Issue />} />
               </Route>
             </Routes>
           </CartProvider>

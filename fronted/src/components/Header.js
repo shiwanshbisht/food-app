@@ -88,10 +88,10 @@ function Header() {
                     </Link>
                     {user.role == "admin" && (
                       <Link
-                        to="/pics"
+                        to="/menu"
                         className="text-white font-bold no-underline px-2 py-2 rounded-full hover:bg-orange-600"
                       >
-                        Upload
+                        Admin Dashboard
                       </Link>
                     )}
                   </>

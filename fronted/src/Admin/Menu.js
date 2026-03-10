@@ -44,7 +44,7 @@ const Menu = () => {
   return (
     <>
       <Header />
-      <div className="flex flex-wrap justify-center">
+      <div className="flex flex-wrap justify-center pt-12">
         {menu.map((foodItem) => (
           <div
             key={foodItem._id}
