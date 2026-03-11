@@ -7,19 +7,23 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MenuList } from "./MenuList";
 import menuItemAction from "../utils/menuItems/menuItemAction"
+import UserContext from "../utils/UserContext";
+import { useNavigate } from "react-router-dom";
 
 export const Menuitem = () => {
   const [search, setSearch] = useState("");
   const [showVegOnly, setShowVegOnly] = useState(false);
   const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const { user } = React.useContext(UserContext);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartItems = useSelector((store) => store.cart.items);
   const backendurl = process.env.REACT_APP_BACKEND_API_URL;
 
   dispatch(menuItemAction());
-  const foodItems=useSelector((store)=> store.menuItems.data);
+  const foodItems = useSelector((store) => store.menuItems.data);
 
-  
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
@@ -37,7 +41,7 @@ export const Menuitem = () => {
   const handleCheckboxChange = (event) => {
     setShowVegOnly(event.target.checked);
   };
-  
+
   const filteredItems = showVegOnly
     ? foodItems.filter((item) => item.veg)
     : foodItems;
@@ -61,14 +65,12 @@ export const Menuitem = () => {
                   className="sr-only"
                 />
                 <div
-                  className={`block w-10 h-6 rounded-full transition ${
-                    showVegOnly ? "bg-green-200" : "bg-gray-300"
-                  }`}
+                  className={`block w-10 h-6 rounded-full transition ${showVegOnly ? "bg-green-200" : "bg-gray-300"
+                    }`}
                 ></div>
                 <div
-                  className={`dot absolute left-1 top-1 w-4 h-4 rounded-full transition transform ${
-                    showVegOnly ? "translate-x-full bg-green-500" : "bg-black"
-                  }`}
+                  className={`dot absolute left-1 top-1 w-4 h-4 rounded-full transition transform ${showVegOnly ? "translate-x-full bg-green-500" : "bg-black"
+                    }`}
                 ></div>
               </div>
             </label>
@@ -95,8 +97,8 @@ export const Menuitem = () => {
                     return debouncedSearch.toLocaleLowerCase() === ""
                       ? foodItem
                       : foodItem.name
-                          .toLocaleLowerCase()
-                          .includes(debouncedSearch.toLocaleLowerCase());
+                        .toLocaleLowerCase()
+                        .includes(debouncedSearch.toLocaleLowerCase());
                   })
                   .map((foodItem) => (
                     <div
@@ -136,19 +138,32 @@ export const Menuitem = () => {
                             <p className="title md-text16 md-f700 md-lh16">
                               ₹ {foodItem.price}
                             </p>
+                            {foodItem.Avlqunatity !== undefined && (
+                              <p className="text-sm font-medium text-gray-500 mt-1">
+                                Available: {foodItem.Avlqunatity}
+                              </p>
+                            )}
                           </div>
                         </div>
                         <div className=" flex items-center justify-between">
-                          <button
-                            className={`pl-6 pr-6 pt-2 pb-2 bg-white text-black rounded shadow border border-gray-300; ${
-                              foodItem.quantity === 0
+                          {user?.role === "admin" ? (
+                            <button
+                              className="pl-6 pr-6 pt-2 pb-2 bg-white text-black rounded shadow border border-gray-300 hover:bg-orange-600 hover:text-white transition"
+                              onClick={() => navigate("/menu")}
+                            >
+                              Edit
+                            </button>
+                          ) : (
+                            <button
+                              className={`pl-6 pr-6 pt-2 pb-2 bg-white text-black rounded shadow border border-gray-300; ${foodItem.quantity === 0
                                 ? "bg-gray-400 cursor-not-allowed"
                                 : "hover:bg-blue-600 transition"
-                            }`}
-                            onClick={() => handleAddItem(foodItem)}
-                          >
-                            Add
-                          </button>
+                                }`}
+                              onClick={() => handleAddItem(foodItem)}
+                            >
+                              Add
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>

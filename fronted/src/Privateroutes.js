@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import UserContext from "./utils/UserContext";
 
 const Privateroutes = () => {
-  let auth = { token: true };
-  return auth.token ? <Outlet /> : <Navigate to="/admin" />;
+  const { user } = useContext(UserContext);
+
+  // Securely check if the global user context recognizes them as an admin
+  return user?.role === "admin" ? <Outlet /> : <Navigate to="/" />;
 };
 
 export default Privateroutes;
