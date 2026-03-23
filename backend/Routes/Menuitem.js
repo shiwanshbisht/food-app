@@ -93,4 +93,51 @@ router.put("/menuitem/:id", async (req, res) => {
   }
 });
 
+// Full edit route — updates all fields, image re-upload is optional
+router.put("/menuitem/:id/edit", upload.single("files"), async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const updateData = {
+      name: req.body.name,
+      price: req.body.price,
+      description: req.body.description,
+      veg: req.body.veg === "true" || req.body.veg === true,
+      bestsellers: req.body.bestsellers === "true" || req.body.bestsellers === true,
+      Avlqunatity: req.body.Avlqunatity,
+    };
+
+    // If a new image was uploaded, push it to Cloudinary
+    if (req.file) {
+      const uploadResult = await cloudinary.uploader.upload(req.file.path);
+      updateData.image = uploadResult.secure_url;
+
+      fs.unlink(req.file.path, (err) => {
+        if (err) console.log("Error deleting temp file:", err);
+      });
+    }
+
+    const updatedItem = await Menuitem.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
+    if (!updatedItem) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    res.status(200).json(updatedItem);
+  } catch (error) {
+    console.error("Error updating menu item:", error);
+
+    // Clean up temp file on error
+    if (req.file) {
+      fs.unlink(req.file.path, (err) => {
+        if (err) console.log("Cleanup error:", err);
+      });
+    }
+
+    res.status(500).json({ error: "Error updating menu item" });
+  }
+});
+
 export default router;

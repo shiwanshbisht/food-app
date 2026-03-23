@@ -6,7 +6,7 @@ import { IoSearch } from "react-icons/io5";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MenuList } from "./MenuList";
-import menuItemAction from "../utils/menuItems/menuItemAction"
+import menuItemAction from "../utils/menuItems/menuItemAction";
 import UserContext from "../utils/UserContext";
 import { useNavigate } from "react-router-dom";
 
@@ -20,9 +20,15 @@ export const Menuitem = () => {
   const cartItems = useSelector((store) => store.cart.items);
   const backendurl = process.env.REACT_APP_BACKEND_API_URL;
 
+  // Edit modal state
+  const [editModal, setEditModal] = useState(false);
+  const [editItem, setEditItem] = useState(null);
+  const [editFile, setEditFile] = useState(null);
+  const [editPreview, setEditPreview] = useState(null);
+  const [saving, setSaving] = useState(false);
+
   dispatch(menuItemAction());
   const foodItems = useSelector((store) => store.menuItems.data);
-
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -45,6 +51,76 @@ export const Menuitem = () => {
   const filteredItems = showVegOnly
     ? foodItems.filter((item) => item.veg)
     : foodItems;
+
+  // --- Edit Modal Handlers ---
+  const openEditModal = (foodItem) => {
+    setEditItem({
+      _id: foodItem._id,
+      name: foodItem.name,
+      price: foodItem.price,
+      description: foodItem.description,
+      veg: foodItem.veg ? "veg" : "nonveg",
+      bestsellers: foodItem.bestsellers || false,
+      Avlqunatity: foodItem.Avlqunatity ?? foodItem.qunatity ?? "",
+    });
+    setEditFile(null);
+    setEditPreview(foodItem.image);
+    setEditModal(true);
+  };
+
+  const closeEditModal = () => {
+    setEditModal(false);
+    setEditItem(null);
+    setEditFile(null);
+    setEditPreview(null);
+  };
+
+  const handleEditFieldChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setEditItem((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleEditFileChange = (e) => {
+    const f = e.target.files[0];
+    if (f) {
+      setEditFile(f);
+      setEditPreview(URL.createObjectURL(f));
+    }
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const formData = new FormData();
+      if (editFile) {
+        formData.append("files", editFile);
+      }
+      formData.append("name", editItem.name);
+      formData.append("price", editItem.price);
+      formData.append("description", editItem.description);
+      formData.append("veg", editItem.veg === "veg" ? true : false);
+      formData.append("bestsellers", editItem.bestsellers);
+      formData.append("Avlqunatity", editItem.Avlqunatity);
+
+      await axios.put(
+        `${backendurl}/menuitem/${editItem._id}/edit`,
+        formData
+      );
+
+      toast.success("Item updated successfully!");
+      dispatch(menuItemAction());
+      closeEditModal();
+    } catch (error) {
+      console.error("Error updating item:", error);
+      toast.error("Failed to update item.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <>
@@ -102,7 +178,7 @@ export const Menuitem = () => {
                   })
                   .map((foodItem) => (
                     <div
-                      key={foodItem.id}
+                      key={foodItem._id}
                       className="p-3"
                       style={{ borderBottom: "1px solid rgb(0 0 0 / 19%)" }}
                     >
@@ -127,6 +203,7 @@ export const Menuitem = () => {
                           <img
                             src={foodItem.image}
                             className="w-full h-full object-cover rounded-[2.5rem]"
+                            alt={foodItem.name}
                           />
                         </div>
 
@@ -149,7 +226,7 @@ export const Menuitem = () => {
                           {user?.role === "admin" ? (
                             <button
                               className="pl-6 pr-6 pt-2 pb-2 bg-white text-black rounded shadow border border-gray-300 hover:bg-orange-600 hover:text-white transition"
-                              onClick={() => navigate("/menu")}
+                              onClick={() => openEditModal(foodItem)}
                             >
                               Edit
                             </button>
@@ -173,6 +250,194 @@ export const Menuitem = () => {
         </div>
         <ToastContainer />
       </div>
+      {editModal && editItem && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ backgroundColor: "rgba(0,0,0,0.55)" }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeEditModal();
+          }}
+        >
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 relative max-h-[90vh] overflow-y-auto">
+            {/* Close button */}
+            <button
+              onClick={closeEditModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold leading-none"
+              aria-label="Close"
+            >
+              &times;
+            </button>
+
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              Edit Menu Item
+            </h2>
+
+            <form onSubmit={handleEditSubmit} className="space-y-5">
+              {/* Image */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Image
+                </label>
+                {editPreview && (
+                  <img
+                    src={editPreview}
+                    alt="Preview"
+                    className="w-24 h-24 object-cover rounded-xl mb-2 border border-gray-200"
+                  />
+                )}
+                <label
+                  htmlFor="edit-file-upload"
+                  className="cursor-pointer inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg border border-gray-300 transition"
+                >
+                  {editFile ? "Change Image" : "Upload New Image"}
+                  <input
+                    id="edit-file-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleEditFileChange}
+                  />
+                </label>
+                {editFile && (
+                  <span className="ml-2 text-xs text-gray-500">
+                    {editFile.name}
+                  </span>
+                )}
+              </div>
+
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={editItem.name}
+                  onChange={handleEditFieldChange}
+                  required
+                  className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  placeholder="Item name"
+                />
+              </div>
+
+              {/* Price */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Price (₹)
+                </label>
+                <input
+                  type="number"
+                  name="price"
+                  value={editItem.price}
+                  onChange={handleEditFieldChange}
+                  required
+                  className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  placeholder="Price"
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  value={editItem.description}
+                  onChange={handleEditFieldChange}
+                  rows="3"
+                  className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  placeholder="Description"
+                />
+              </div>
+
+              {/* Veg / Non-Veg */}
+              <div>
+                <span className="block text-sm font-medium text-gray-700 mb-2">
+                  Type
+                </span>
+                <div className="flex items-center space-x-6">
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="veg"
+                      value="veg"
+                      checked={editItem.veg === "veg"}
+                      onChange={handleEditFieldChange}
+                      className="w-4 h-4 text-green-600"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">Veg</span>
+                  </label>
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="veg"
+                      value="nonveg"
+                      checked={editItem.veg === "nonveg"}
+                      onChange={handleEditFieldChange}
+                      className="w-4 h-4 text-red-600"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">Non-Veg</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Bestsellers */}
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="bestsellers"
+                  id="edit-bestsellers"
+                  checked={editItem.bestsellers}
+                  onChange={handleEditFieldChange}
+                  className="w-4 h-4 text-yellow-600 bg-gray-100 border-gray-300 rounded"
+                />
+                <label
+                  htmlFor="edit-bestsellers"
+                  className="ml-2 text-sm font-medium text-gray-700"
+                >
+                  Best Seller
+                </label>
+              </div>
+
+              {/* Available Quantity */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Available Quantity
+                </label>
+                <input
+                  type="number"
+                  name="Avlqunatity"
+                  value={editItem.Avlqunatity}
+                  onChange={handleEditFieldChange}
+                  className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  placeholder="Available quantity"
+                  min="0"
+                />
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={closeEditModal}
+                  className="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-100 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex-1 py-2 px-4 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm font-medium transition disabled:opacity-60"
+                >
+                  {saving ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 };
