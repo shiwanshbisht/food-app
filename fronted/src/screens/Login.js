@@ -45,6 +45,7 @@ const Login = () => {
         setIsLoggingIn(true);
         const token = result.token;
         Cookies.set("jwt", token);
+        localStorage.setItem("token", token);
 
         setTimeout(() => {
           const decoded = jwtDecode(token);

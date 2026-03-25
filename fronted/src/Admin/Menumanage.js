@@ -51,7 +51,10 @@ export const Menumanage = () => {
 
     try {
       // Axios automatically sets "Content-Type" with the proper boundary when using FormData
-      const response = await axios.post(`${backendurl}/menuitem`, formData);
+      const token = localStorage.getItem("token");
+      const response = await axios.post(`${backendurl}/menuitem`, formData, {
+        headers: { "auth-token": token },
+      });
 
       console.log("menu updated", response.data);
       if (response) {

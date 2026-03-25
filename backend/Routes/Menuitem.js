@@ -3,6 +3,7 @@ import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import Menuitem from "../models/Menuitem.js";
+import { fetchUser, adminOnly } from "../middleware/Authmiddle.js";
 
 const router = express.Router();
 
@@ -31,7 +32,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/menuitem", upload.single("files"), async (req, res) => {
+router.post("/menuitem", fetchUser, adminOnly, upload.single("files"), async (req, res) => {
   try {
     const uploadResult = await cloudinary.uploader.upload(req.file.path);
     const newimage = uploadResult.secure_url;
@@ -78,7 +79,7 @@ router.get("/menuitem", async (req, res) => {
   }
 });
 
-router.put("/menuitem/:id", async (req, res) => {
+router.put("/menuitem/:id", fetchUser, adminOnly, async (req, res) => {
   try {
     const { id } = req.params;
     const { quantity } = req.body;
@@ -94,7 +95,7 @@ router.put("/menuitem/:id", async (req, res) => {
 });
 
 // Full edit route — updates all fields, image re-upload is optional
-router.put("/menuitem/:id/edit", upload.single("files"), async (req, res) => {
+router.put("/menuitem/:id/edit", fetchUser, adminOnly, upload.single("files"), async (req, res) => {
   try {
     const { id } = req.params;
 

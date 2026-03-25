@@ -1,9 +1,11 @@
-import React from "react";
-import Carousel from "react-bootstrap/Carousel";
-import TextRotator from "./TextRotator";
+import React, { useContext } from "react";
 import Type from "./Type";
+import UserContext from "../utils/UserContext";
+
 
 export const Carousels = () => {
+  const { user } = useContext(UserContext);
+
   return (
     <>
       <div
@@ -38,14 +40,16 @@ export const Carousels = () => {
                   </span>
                 </h2>
               </div>
-              <div className="mt-10 flex flex-col items-center md:flex-row">
-                <a
-                  href="#menuItem"
-                  className="mb-3 inline-flex h-12 w-full items-center justify-center rounded bg-red-400 px-6 font-medium tracking-wide text-white shadow-md transition md:mr-4 md:mb-0 md:w-auto focus:outline-none hover:bg-blue-800"
-                >
-                  Order Now
-                </a>
-              </div>
+              {user?.role === "admin" ? null :
+                <div className="mt-10 flex flex-col items-center md:flex-row">
+                  <a
+                    href="#menuItem"
+                    className="mb-3 inline-flex h-12 w-full items-center justify-center rounded bg-red-400 px-6 font-medium tracking-wide text-white shadow-md transition md:mr-4 md:mb-0 md:w-auto focus:outline-none hover:bg-blue-800"
+                  >
+                    Order Now
+                  </a>
+                </div>
+              }
             </div>
           </div>
         </div>

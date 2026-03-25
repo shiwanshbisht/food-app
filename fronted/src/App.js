@@ -13,7 +13,6 @@ import Privateroutes from "./Privateroutes";
 import { Provider } from "react-redux";
 import appStore from "./utils/store";
 import { Menumanage } from "./Admin/Menumanage";
-import Menu from "./Admin/Menu";
 import Picsupload from "./components/Picsupload";
 import Userinfo from "./components/UserInfo";
 
@@ -35,7 +34,6 @@ function App() {
 
               <Route element={<Privateroutes />}>
                 <Route path="/admin/user" element={<Admin />} />
-                <Route path="/menu" element={<Menu />} />
                 <Route path="/order" element={<Adminorders />} />
                 <Route path="/addmenu" element={<Menumanage />} />
               </Route>

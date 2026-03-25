@@ -41,12 +41,6 @@ function Header() {
           >
             <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
               <Link
-                to="/menu"
-                className="text-white font-bold no-underline px-4 py-2 rounded-full hover:bg-orange-600 transition-colors"
-              >
-                Menu
-              </Link>
-              <Link
                 to="/addmenu"
                 className="text-white font-bold no-underline px-4 py-2 rounded-full hover:bg-orange-600 transition-colors"
               >
