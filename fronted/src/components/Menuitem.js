@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { addItem } from "../utils/cartSlice";
@@ -91,6 +92,22 @@ export const Menuitem = () => {
     }
   };
 
+  const handleDelete = (id) => {
+    const token = Cookies.get("jwt");
+    axios.delete(`${backendurl}/menuitem/${id}/delete`, {
+      headers: { "auth-token": token },
+    })
+      .then((res) => {
+        toast.success("Item deleted successfully!");
+        dispatch(menuItemAction());
+        closeEditModal();
+      })
+      .catch((err) => {
+        toast.error("Failed to delete item.");
+      });
+  };
+
+
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -106,9 +123,11 @@ export const Menuitem = () => {
       formData.append("bestsellers", editItem.bestsellers);
       formData.append("Avlqunatity", editItem.Avlqunatity);
 
+      const token = Cookies.get("jwt");
       await axios.put(
         `${backendurl}/menuitem/${editItem._id}/edit`,
-        formData
+        formData,
+        { headers: { "auth-token": token } }
       );
 
       toast.success("Item updated successfully!");
@@ -262,15 +281,17 @@ export const Menuitem = () => {
             {/* Close button */}
             <button
               onClick={closeEditModal}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold leading-none"
+              className="absolute top-4 right-4 text-gray-100 hover:text-gray-700 text-2xl font-bold leading-none"
               aria-label="Close"
             >
               &times;
             </button>
 
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
-              Edit Menu Item
-            </h2>
+            <div className="bg-orange-600 rounded-t-2xl -mx-6 -mt-6 px-4 py-3 mb-6">
+              <h2 className="text-center text-2xl font-bold text-white">
+                Edit
+              </h2>
+            </div>
 
             <form onSubmit={handleEditSubmit} className="space-y-5">
               {/* Image */}
@@ -278,31 +299,35 @@ export const Menuitem = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Image
                 </label>
-                {editPreview && (
-                  <img
-                    src={editPreview}
-                    alt="Preview"
-                    className="w-24 h-24 object-cover rounded-xl mb-2 border border-gray-200"
-                  />
-                )}
-                <label
-                  htmlFor="edit-file-upload"
-                  className="cursor-pointer inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg border border-gray-300 transition"
-                >
-                  {editFile ? "Change Image" : "Upload New Image"}
-                  <input
-                    id="edit-file-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleEditFileChange}
-                  />
-                </label>
-                {editFile && (
-                  <span className="ml-2 text-xs text-gray-500">
-                    {editFile.name}
-                  </span>
-                )}
+                <div className="flex flex-row items-center gap-4">
+                  {editPreview && (
+                    <img
+                      src={editPreview}
+                      alt="Preview"
+                      className="w-24 h-24 object-cover rounded-xl border border-gray-200"
+                    />
+                  )}
+                  <div className="flex flex-col gap-1">
+                    <label
+                      htmlFor="edit-file-upload"
+                      className="cursor-pointer inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg border border-gray-300 transition"
+                    >
+                      {editFile ? "Change Image" : "Upload New Image"}
+                      <input
+                        id="edit-file-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleEditFileChange}
+                      />
+                    </label>
+                    {editFile && (
+                      <span className="text-xs text-gray-500">
+                        {editFile.name}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Name */}
@@ -415,6 +440,16 @@ export const Menuitem = () => {
                   placeholder="Available quantity"
                   min="0"
                 />
+              </div>
+
+              {/* delete item */}
+              <div>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(editItem._id)}
+                  className="w-full flex-1 py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition disabled:opacity-60">
+                  Delete Item
+                </button>
               </div>
 
               {/* Buttons */}

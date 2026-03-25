@@ -141,4 +141,13 @@ router.put("/menuitem/:id/edit", fetchUser, adminOnly, upload.single("files"), a
   }
 });
 
+router.delete("/menuitem/:id/delete", fetchUser, adminOnly, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const menu = await Menuitem.findByIdAndDelete(id);
+    res.status(200).json(menu);
+  } catch (error) {
+    res.status(500).json({ error: "Error deleting menu item" });
+  }
+});
 export default router;
