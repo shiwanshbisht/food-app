@@ -442,18 +442,15 @@ export const Menuitem = () => {
                 />
               </div>
 
-              {/* delete item */}
-              <div>
+              {/* Buttons */}
+              <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => handleDelete(editItem._id)}
-                  className="w-full flex-1 py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition disabled:opacity-60">
-                  Delete Item
+                  className="flex-1 py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition"
+                >
+                  Delete
                 </button>
-              </div>
-
-              {/* Buttons */}
-              <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={closeEditModal}
