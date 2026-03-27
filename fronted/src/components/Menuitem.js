@@ -28,7 +28,6 @@ export const Menuitem = () => {
   const [editPreview, setEditPreview] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  // Pagination & Data state
   const [currentPage, setCurrentPage] = useState(1);
   const { data: foodItems = [], totalPages = 1 } = useSelector((store) => store.menuItems);
 
@@ -276,7 +275,10 @@ export const Menuitem = () => {
         {/* Pagination Controls */}
         <div className="flex items-center justify-center space-x-4 mt-8 mb-4">
           <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            onClick={() => {
+              setCurrentPage((prev) => Math.max(prev - 1, 1));
+              document.getElementById("menuItem")?.scrollIntoView({ behavior: "smooth" });
+            }}
             disabled={currentPage === 1}
             className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
@@ -286,7 +288,10 @@ export const Menuitem = () => {
             Page {currentPage} of {totalPages === 0 ? 1 : totalPages}
           </span>
           <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() => {
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+              document.getElementById("menuItem")?.scrollIntoView({ behavior: "smooth" });
+            }}
             disabled={currentPage === totalPages || totalPages === 0}
             className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
