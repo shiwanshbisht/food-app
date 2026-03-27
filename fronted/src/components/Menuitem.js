@@ -28,8 +28,13 @@ export const Menuitem = () => {
   const [editPreview, setEditPreview] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  dispatch(menuItemAction());
-  const foodItems = useSelector((store) => store.menuItems.data);
+  // Pagination & Data state
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data: foodItems = [], totalPages = 1 } = useSelector((store) => store.menuItems);
+
+  useEffect(() => {
+    dispatch(menuItemAction(currentPage, 15));
+  }, [dispatch, currentPage]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -99,7 +104,7 @@ export const Menuitem = () => {
     })
       .then((res) => {
         toast.success("Item deleted successfully!");
-        dispatch(menuItemAction());
+        dispatch(menuItemAction(currentPage, 15));
         closeEditModal();
       })
       .catch((err) => {
@@ -131,7 +136,7 @@ export const Menuitem = () => {
       );
 
       toast.success("Item updated successfully!");
-      dispatch(menuItemAction());
+      dispatch(menuItemAction(currentPage, 15));
       closeEditModal();
     } catch (error) {
       console.error("Error updating item:", error);
@@ -208,7 +213,7 @@ export const Menuitem = () => {
                           </span>
                         )}
                         {foodItem.veg && (
-                          <div className="w-5 h-5">
+                          <div className="w-5 h-5 ml-auto">
                             <img
                               src="https://img.icons8.com/?size=64&id=119426&format=png"
                               alt="Veg Icon"
@@ -267,6 +272,28 @@ export const Menuitem = () => {
             </div>
           </div>
         </div>
+
+        {/* Pagination Controls */}
+        <div className="flex items-center justify-center space-x-4 mt-8 mb-4">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          >
+            &larr; Prev
+          </button>
+          <span className="text-sm font-medium text-gray-700">
+            Page {currentPage} of {totalPages === 0 ? 1 : totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages || totalPages === 0}
+            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          >
+            Next &rarr;
+          </button>
+        </div>
+
         <ToastContainer />
       </div>
       {editModal && editItem && (
@@ -447,10 +474,12 @@ export const Menuitem = () => {
                 <button
                   type="button"
                   onClick={() => handleDelete(editItem._id)}
-                  className="flex-1 py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition"
+                  className="w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition"
                 >
                   Delete
                 </button>
+              </div>
+              <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={closeEditModal}

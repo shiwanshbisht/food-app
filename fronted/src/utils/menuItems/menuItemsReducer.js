@@ -1,14 +1,21 @@
 const initialState = {
-    data: ["asdasd"], 
+  data: [],
+  totalPages: 1,
+  currentPage: 1
 };
-  
+
 const menuItemReducer = (state = initialState, action) => {
-    switch (action.type) {
-      case 'MENUITEMS':
-        return { ...state, data: action.payload }; 
-      default:
-        return state; 
-    }
+  switch (action.type) {
+    case 'MENUITEMS':
+      return {
+        ...state,
+        data: action.payload.items || [],
+        totalPages: action.payload.totalPages || 1,
+        currentPage: action.payload.page || 1
+      };
+    default:
+      return state;
+  }
 };
-  
+
 export default menuItemReducer;

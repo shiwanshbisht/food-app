@@ -1,10 +1,10 @@
 import axios from 'axios';
 const backendurl = process.env.REACT_APP_BACKEND_API_URL;
 
-const menuItemAction = () => {
+const menuItemAction = (page = 1, limit = 15) => {
   return async (dispatch) => {
     try {
-      const response = await axios.get(`https://food-app-kxjf.onrender.com/menuitem`);
+      const response = await axios.get(`https://food-app-kxjf.onrender.com/menuitem?page=${page}&limit=${limit}`);
       dispatch({
         type: 'MENUITEMS',
         payload: response.data,
