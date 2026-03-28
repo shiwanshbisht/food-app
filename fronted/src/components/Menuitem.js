@@ -29,11 +29,16 @@ export const Menuitem = () => {
   const [saving, setSaving] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [isPaginationEnabled, setIsPaginationEnabled] = useState(true);
   const { data: foodItems = [], totalPages = 1 } = useSelector((store) => store.menuItems);
 
   useEffect(() => {
-    dispatch(menuItemAction(currentPage, 15));
-  }, [dispatch, currentPage]);
+    if (isPaginationEnabled) {
+      dispatch(menuItemAction(currentPage, 15));
+    } else {
+      dispatch(menuItemAction(1, 1000));
+    }
+  }, [dispatch, currentPage, isPaginationEnabled]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -103,7 +108,7 @@ export const Menuitem = () => {
     })
       .then((res) => {
         toast.success("Item deleted successfully!");
-        dispatch(menuItemAction(currentPage, 15));
+        dispatch(menuItemAction(isPaginationEnabled ? currentPage : 1, isPaginationEnabled ? 15 : 1000));
         closeEditModal();
       })
       .catch((err) => {
@@ -135,7 +140,7 @@ export const Menuitem = () => {
       );
 
       toast.success("Item updated successfully!");
-      dispatch(menuItemAction(currentPage, 15));
+      dispatch(menuItemAction(isPaginationEnabled ? currentPage : 1, isPaginationEnabled ? 15 : 1000));
       closeEditModal();
     } catch (error) {
       console.error("Error updating item:", error);
@@ -149,30 +154,58 @@ export const Menuitem = () => {
     <>
       <div id="menuItem" className="container mx-auto py-8">
         <div className="flex flex-row items-center justify-between mb-4">
-          <div className="flex items-center p-2  bg-white text-black rounded shadow border border-gray-300">
-            <label
-              htmlFor="showVegOnly"
-              className="flex items-center cursor-pointer"
-            >
-              <span className="p-2 mr-2 text-black font-bold">Veg only</span>
-              <div className="relative">
-                <input
-                  type="checkbox"
-                  id="showVegOnly"
-                  checked={showVegOnly}
-                  onChange={handleCheckboxChange}
-                  className="sr-only"
-                />
-                <div
-                  className={`block w-10 h-6 rounded-full transition ${showVegOnly ? "bg-green-200" : "bg-gray-300"
-                    }`}
-                ></div>
-                <div
-                  className={`dot absolute left-1 top-1 w-4 h-4 rounded-full transition transform ${showVegOnly ? "translate-x-full bg-green-500" : "bg-black"
-                    }`}
-                ></div>
-              </div>
-            </label>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center p-2 bg-white text-black rounded shadow border border-gray-300">
+              <label
+                htmlFor="showVegOnly"
+                className="flex items-center cursor-pointer"
+              >
+                <span className="p-2 mr-2 text-black font-bold">Veg only</span>
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    id="showVegOnly"
+                    checked={showVegOnly}
+                    onChange={handleCheckboxChange}
+                    className="sr-only"
+                  />
+                  <div
+                    className={`block w-10 h-6 rounded-full transition ${showVegOnly ? "bg-green-200" : "bg-gray-300"
+                      }`}
+                  ></div>
+                  <div
+                    className={`dot absolute left-1 top-1 w-4 h-4 rounded-full transition transform ${showVegOnly ? "translate-x-full bg-green-500" : "bg-black"
+                      }`}
+                  ></div>
+                </div>
+              </label>
+            </div>
+
+            <div className="flex items-center p-2 bg-white text-black rounded shadow border border-gray-300">
+              <label
+                htmlFor="enablePagination"
+                className="flex items-center cursor-pointer"
+              >
+                <span className="p-2 mr-2 text-black font-bold">Pagination</span>
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    id="enablePagination"
+                    checked={isPaginationEnabled}
+                    onChange={(e) => setIsPaginationEnabled(e.target.checked)}
+                    className="sr-only"
+                  />
+                  <div
+                    className={`block w-10 h-6 rounded-full transition ${isPaginationEnabled ? "bg-orange-200" : "bg-gray-300"
+                      }`}
+                  ></div>
+                  <div
+                    className={`dot absolute left-1 top-1 w-4 h-4 rounded-full transition transform ${isPaginationEnabled ? "translate-x-full bg-orange-500" : "bg-black"
+                      }`}
+                  ></div>
+                </div>
+              </label>
+            </div>
           </div>
 
           <div className="w-1/2 flex items-center  rounded  p-2 bg-white text-black rounded shadow border border-gray-300">
@@ -273,31 +306,33 @@ export const Menuitem = () => {
         </div>
 
         {/* Pagination Controls */}
-        <div className="flex items-center justify-center space-x-4 mt-8 mb-4">
-          <button
-            onClick={() => {
-              setCurrentPage((prev) => Math.max(prev - 1, 1));
-              document.getElementById("menuItem")?.scrollIntoView({ behavior: "smooth" });
-            }}
-            disabled={currentPage === 1}
-            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
-          >
-            &larr; Prev
-          </button>
-          <span className="text-sm font-medium text-gray-700">
-            Page {currentPage} of {totalPages === 0 ? 1 : totalPages}
-          </span>
-          <button
-            onClick={() => {
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-              document.getElementById("menuItem")?.scrollIntoView({ behavior: "smooth" });
-            }}
-            disabled={currentPage === totalPages || totalPages === 0}
-            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
-          >
-            Next &rarr;
-          </button>
-        </div>
+        {isPaginationEnabled && (
+          <div className="flex items-center justify-center space-x-4 mt-8 mb-4">
+            <button
+              onClick={() => {
+                setCurrentPage((prev) => Math.max(prev - 1, 1));
+                document.getElementById("menuItem")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              &larr; Prev
+            </button>
+            <span className="text-sm font-medium text-gray-700">
+              Page {currentPage} of {totalPages === 0 ? 1 : totalPages}
+            </span>
+            <button
+              onClick={() => {
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                document.getElementById("menuItem")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              Next &rarr;
+            </button>
+          </div>
+        )}
 
         <ToastContainer />
       </div>
