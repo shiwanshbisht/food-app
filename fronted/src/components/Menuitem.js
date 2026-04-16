@@ -29,16 +29,60 @@ export const Menuitem = () => {
   const [saving, setSaving] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [infinitePage, setInfinitePage] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [isPaginationEnabled, setIsPaginationEnabled] = useState(true);
   const { data: foodItems = [], totalPages = 1 } = useSelector((store) => store.menuItems);
 
+  // When toggle changes, reset pages
+  useEffect(() => {
+    setCurrentPage(1);
+    setInfinitePage(1);
+  }, [isPaginationEnabled]);
+
+  // For pagination mode
   useEffect(() => {
     if (isPaginationEnabled) {
-      dispatch(menuItemAction(currentPage, 15));
-    } else {
-      dispatch(menuItemAction(1, 1000));
+      dispatch(menuItemAction(currentPage, 15, false));
     }
   }, [dispatch, currentPage, isPaginationEnabled]);
+
+  // For infinite scroll mode
+  useEffect(() => {
+    if (!isPaginationEnabled) {
+      const fetchItems = async () => {
+        setLoadingMore(true);
+        if (infinitePage > 1) {
+          await new Promise((resolve) => setTimeout(resolve, 800));
+        }
+
+        if (infinitePage === 1) {
+          await dispatch(menuItemAction(1, 15, false));
+        } else {
+          await dispatch(menuItemAction(infinitePage, 15, true));
+        }
+        setLoadingMore(false);
+      };
+      fetchItems();
+    }
+  }, [dispatch, infinitePage, isPaginationEnabled]);
+
+  const handleScroll = React.useCallback(() => {
+    if (isPaginationEnabled || loadingMore) return;
+
+    const scrolledToBottom =
+      window.innerHeight + document.documentElement.scrollTop + 50 >=
+      document.documentElement.offsetHeight;
+
+    if (scrolledToBottom && infinitePage < totalPages) {
+      setInfinitePage((prev) => prev + 1);
+    }
+  }, [isPaginationEnabled, loadingMore, infinitePage, totalPages]);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -108,7 +152,7 @@ export const Menuitem = () => {
     })
       .then((res) => {
         toast.success("Item deleted successfully!");
-        dispatch(menuItemAction(isPaginationEnabled ? currentPage : 1, isPaginationEnabled ? 15 : 1000));
+        dispatch(menuItemAction(isPaginationEnabled ? currentPage : 1, isPaginationEnabled ? 15 : 15 * infinitePage, false));
         closeEditModal();
       })
       .catch((err) => {
@@ -140,7 +184,7 @@ export const Menuitem = () => {
       );
 
       toast.success("Item updated successfully!");
-      dispatch(menuItemAction(isPaginationEnabled ? currentPage : 1, isPaginationEnabled ? 15 : 1000));
+      dispatch(menuItemAction(isPaginationEnabled ? currentPage : 1, isPaginationEnabled ? 15 : 15 * infinitePage, false));
       closeEditModal();
     } catch (error) {
       console.error("Error updating item:", error);
@@ -302,6 +346,12 @@ export const Menuitem = () => {
                     </div>
                   ))}
             </div>
+
+            {!isPaginationEnabled && loadingMore && infinitePage > 1 && (
+              <div className="flex justify-center items-center py-8">
+                <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
           </div>
         </div>
 
