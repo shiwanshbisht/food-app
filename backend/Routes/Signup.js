@@ -1,5 +1,6 @@
 
 import express from 'express';
+import { verifyToken } from '../middleware/Authmiddle.js';
 import User from '../models/User.js'
 import { body, validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
@@ -18,12 +19,29 @@ router.post('/signup',
         }
         const salt = await bcrypt.genSalt(10);
         let secPassword = await bcrypt.hash(req.body.password, salt)
+        
+        // Securely assign role
+        let assignedRole = "customer";
+        if (req.body.role === "admin") {
+            const token = req.header("auth-token");
+            if (token) {
+                try {
+                    const decoded = verifyToken(token);
+                    if (decoded && decoded.role === "admin") {
+                        assignedRole = "admin";
+                    }
+                } catch (err) {
+                    console.error("Token verification failed during signup:", err.message);
+                }
+            }
+        }
+
         try {
             await User.create({
                 name: req.body.name,
                 email: req.body.email,
                 password: secPassword,
-                role: req.body.role
+                role: assignedRole
             }).then(user => {
                 console.log("User registered successfully:", user);
                 res.status(200).json({ message: "User registered successfully", user: user });

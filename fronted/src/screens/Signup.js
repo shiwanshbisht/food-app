@@ -1,19 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "../components/Header";
 import { Link, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const Signup = () => {
   let navigate = useNavigate();
   const backendurl = process.env.REACT_APP_BACKEND_API_URL;
   const [showPopup, setShowPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
   const [user, setUser] = useState({
     name: "",
     email: "",
     password: "",
     role: "customer", // Default role
   });
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        if (decoded && decoded.role === "admin") {
+          setIsAdmin(true);
+        }
+      } catch (e) {
+        console.error("Invalid token:", e);
+      }
+    }
+  }, []);
 
   const handleChange = (e) => {
     setUser((prev) => ({
@@ -38,6 +54,7 @@ const Signup = () => {
         {
           headers: {
             "Content-Type": "application/json",
+            "auth-token": localStorage.getItem("token") || "",
           },
         }
       );
@@ -117,11 +134,14 @@ const Signup = () => {
                 className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                 placeholder="••••••••"
                 required
+                value={user.password}
+                autoComplete="new-password"
                 onChange={handleChange}
               />
             </div>
 
             {/* Role Selection */}
+            {isAdmin && (
             <div className="flex flex-col space-y-2">
               <span className="text-sm font-medium text-black dark:text-white">Account Type:</span>
               <div className="flex items-center space-x-6 mt-1">
@@ -155,6 +175,7 @@ const Signup = () => {
                 </div>
               </div>
             </div>
+            )}
             <div className="flex items-start mb-6">
               <input
                 id="terms"
